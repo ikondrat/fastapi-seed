@@ -1,8 +1,19 @@
 from typing import Union
 
 from fastapi import FastAPI
+from .datalayer.db import DatabaseManager
 
 app = FastAPI()
+
+# Global instance
+db_manager = DatabaseManager(cleanup_existing=True)
+
+
+# For FastAPI dependency injection
+def get_session():
+    """Yield a new session for database operations."""
+    with db_manager.session() as session:
+        yield session
 
 
 @app.get("/")
