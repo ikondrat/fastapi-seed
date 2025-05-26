@@ -96,7 +96,7 @@ wheels = [
 ]
 
 [[package]]
-name = "fastapi-seed"
+name = "fastapi_seed"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

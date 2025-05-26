@@ -1,1 +1,1 @@
-# fastapi-seed
+# fastapi_seed

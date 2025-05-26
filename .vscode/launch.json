@@ -9,7 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
-            "args": ["fastapi-seed.api:app", "--reload", "--port", "8001"],
+            "args": ["fastapi_seed.api:app", "--reload", "--port", "8001"],
             "envFile": "${workspaceFolder}/lightly_purple/dataset/.env",
             "python": "${workspaceFolder}/.venv/bin/python",
             "jinja": true
