@@ -1,14 +1,27 @@
-from __future__ import annotations
 from uuid import UUID, uuid4
-from sqlmodel import Field, SQLModel
-from typing import Optional
-from datetime import date
+from sqlmodel import Field, SQLModel, Relationship
+from typing import List
 
 
 class Movie(SQLModel, table=True):
+    __tablename__ = "movies"
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     title: str
-    release_date: date
-    genre: str
-    rating: float = Field(default=0.0, ge=0.0, le=10.0)
-    hero_id: Optional[UUID] = Field(default=None, foreign_key="hero.id")
+
+    # Relationship
+    heroes: List["Hero"] = Relationship(  # type: ignore # noqa: F821, E501
+        back_populates="movie",
+    )
+
+
+class MovieBase(SQLModel):
+    id: UUID
+    title: str
+
+
+class MovieInput(SQLModel):
+    title: str
+
+
+class MovieView(MovieBase):
+    pass

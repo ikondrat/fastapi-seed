@@ -1,9 +1,10 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
+from uuid import UUID
 
 from fastapi_seed.datalayer.db import DatabaseManager
-from fastapi_seed.datalayer.models.movie import Movie
+from fastapi_seed.datalayer.models.movie import Movie, MovieInput, MovieView
 from fastapi_seed.datalayer.models.hero import Hero
 
 router = APIRouter(prefix="/movies", tags=["movies"])
@@ -15,13 +16,9 @@ def get_session():
         yield session
 
 
-@router.post("/", response_model=Movie)
-def create_movie(movie: Movie, session: Session = Depends(get_session)):
-    if movie.hero_id:
-        hero = session.get(Hero, movie.hero_id)
-        if not hero:
-            raise HTTPException(status_code=404, detail="Hero not found")
-
+@router.post("/", response_model=MovieView)
+def create_movie(movie_input: MovieInput, session: Session = Depends(get_session)):
+    movie = Movie(title=movie_input.title)
     session.add(movie)
     session.commit()
     session.refresh(movie)
@@ -32,47 +29,26 @@ def create_movie(movie: Movie, session: Session = Depends(get_session)):
 def read_movies(
     skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
 ):
-    movies = session.exec(select(Movie).offset(skip).limit(limit)).all()
+    # Use select with join to get movies with their heroes
+    statement = select(Movie).offset(skip).limit(limit)
+    movies = session.exec(statement).all()
     return movies
 
 
-@router.get("/{movie_id}", response_model=Movie)
-def read_movie(movie_id: int, session: Session = Depends(get_session)):
-    movie = session.get(Movie, movie_id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-    return movie
-
-
-@router.put("/{movie_id}", response_model=Movie)
-def update_movie(
-    movie_id: int, movie_update: Movie, session: Session = Depends(get_session)
+@router.put("/{movie_id}/assign-hero/{hero_id}", response_model=Movie)
+def assign_hero_to_movie(
+    movie_id: UUID, hero_id: UUID, session: Session = Depends(get_session)
 ):
     movie = session.get(Movie, movie_id)
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
 
-    if movie_update.hero_id:
-        hero = session.get(Hero, movie_update.hero_id)
-        if not hero:
-            raise HTTPException(status_code=404, detail="Hero not found")
+    hero = session.get(Hero, hero_id)
+    if not hero:
+        raise HTTPException(status_code=404, detail="Hero not found")
 
-    movie_data = movie_update.dict(exclude_unset=True)
-    for key, value in movie_data.items():
-        setattr(movie, key, value)
-
-    session.add(movie)
+    hero.movie_id = movie_id
+    session.add(hero)
     session.commit()
     session.refresh(movie)
     return movie
-
-
-@router.delete("/{movie_id}")
-def delete_movie(movie_id: int, session: Session = Depends(get_session)):
-    movie = session.get(Movie, movie_id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-
-    session.delete(movie)
-    session.commit()
-    return {"message": "Movie deleted successfully"}
