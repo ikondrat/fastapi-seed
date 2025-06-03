@@ -4,7 +4,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 # Use TYPE_CHECKING to avoid circular imports at runtime
 if TYPE_CHECKING:
-    from fastapi_seed.repository.models.movie import Movie
+    from fastapi_seed.models.movie import Movie
 else:
     # Create a placeholder for runtime that will be replaced with the real class
     Movie = object  # type: ignore

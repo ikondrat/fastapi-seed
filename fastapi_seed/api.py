@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from .repository.db import DatabaseManager
-from .routes import heroes, movies
+from fastapi_seed.repository.db import DatabaseManager
+from fastapi_seed.routes import heroes, movies
 
 app = FastAPI(title="Heroes and Movies API")
 

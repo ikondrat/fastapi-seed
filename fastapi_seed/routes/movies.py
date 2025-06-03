@@ -18,7 +18,7 @@ def get_session():
 
 @router.post("/", response_model=MovieView)
 def create_movie(movie_input: MovieInput, session: Session = Depends(get_session)):
-    movie = Movie(title=movie_input.title)
+    movie = Movie.model_validate(movie_input)
     session.add(movie)
     session.commit()
     session.refresh(movie)

@@ -4,7 +4,7 @@ from sqlmodel import Field, SQLModel, Relationship
 
 # Use TYPE_CHECKING to avoid circular imports at runtime
 if TYPE_CHECKING:
-    from fastapi_seed.repository.models.hero import Hero
+    from fastapi_seed.models.hero import Hero
 else:
     # Create a placeholder for runtime that will be replaced with the real class
     Hero = object  # type: ignore
@@ -16,7 +16,7 @@ class Movie(SQLModel, table=True):
     title: str
 
     # Relationship
-    heroes: List[Hero] = Relationship(
+    heroes: List["Hero"] = Relationship(
         back_populates="movie",
     )
 
