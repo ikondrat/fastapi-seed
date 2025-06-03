@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .datalayer.db import DatabaseManager
+from .repository.db import DatabaseManager
 from .routes import heroes, movies
 
 app = FastAPI(title="Heroes and Movies API")

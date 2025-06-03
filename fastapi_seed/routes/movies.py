@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from uuid import UUID
 
-from fastapi_seed.datalayer.db import DatabaseManager
-from fastapi_seed.datalayer.models.movie import Movie, MovieInput, MovieView
-from fastapi_seed.datalayer.models.hero import Hero
+from fastapi_seed.repository.db import DatabaseManager
+from fastapi_seed.models.movie import Movie, MovieInput, MovieView
+from fastapi_seed.models.hero import Hero
 
 router = APIRouter(prefix="/movies", tags=["movies"])
 

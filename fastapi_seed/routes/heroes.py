@@ -2,8 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
-from fastapi_seed.datalayer.db import DatabaseManager
-from fastapi_seed.datalayer.models.hero import Hero, HeroInput
+from fastapi_seed.repository.db import DatabaseManager
+from fastapi_seed.models.hero import Hero, HeroInput
 
 router = APIRouter(prefix="/heroes", tags=["heroes"])
 
@@ -33,5 +33,6 @@ def read_heroes(
 ):
     # Use select with join to get heroes with their movies
     statement = select(Hero).offset(skip).limit(limit)
+
     heroes = session.exec(statement).all()
     return heroes
