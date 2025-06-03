@@ -1,6 +1,6 @@
 from typing import Dict
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
 from ..services.content_moderation import ContentModerationService
@@ -20,13 +20,16 @@ class ModerationResponse(BaseModel):
 
 @router.post("/moderate", response_model=ModerationResponse)
 async def moderate_content(
-    request: ModerationRequest,
+    request: Request,
+    moderation_request: ModerationRequest,
     service: ContentModerationService = Depends(get_moderation_service)
 ):
     """Moderate the provided text content and return category scores.
     """
-    scores = service.moderate_text(request.text)
-    request_rate = service.get_request_rate()
+    scores = service.moderate_text(moderation_request.text)
+
+    # Get RPS from middleware
+    request_rate = getattr(request.state, "rps", 0.0)
 
     return ModerationResponse(
         scores=scores,

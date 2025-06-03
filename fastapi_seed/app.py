@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from fastapi_seed.api import content_moderation, heroes
+from fastapi_seed.middleware.rps_tracker import RPSTrackerMiddleware
 from fastapi_seed.repository.database import DatabaseManager
 from fastapi_seed.services.content_moderation import ContentModerationService
 
@@ -33,6 +34,9 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Lightly Purple API", version="1.0.0", lifespan=lifespan
     )
+
+    # Add RPS tracker middleware
+    app.add_middleware(RPSTrackerMiddleware)
 
     app.include_router(heroes.router)
     app.include_router(content_moderation.router)

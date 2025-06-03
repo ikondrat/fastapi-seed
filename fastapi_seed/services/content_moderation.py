@@ -1,3 +1,4 @@
+import logging
 import time
 from collections import deque
 from threading import Lock
@@ -5,6 +6,13 @@ from typing import Dict, Optional
 
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 class ContentModerationService:
@@ -40,6 +48,7 @@ class ContentModerationService:
             self.request_times = deque(maxlen=1000)  # Store last 1000 requests
             self.lock = Lock()
             self._initialized = True
+            logger.info("ContentModerationService initialized with model: %s", model_name)
 
     @classmethod
     def initialize(cls, model_name: str = "KoalaAI/Text-Moderation") -> "ContentModerationService":
@@ -60,7 +69,9 @@ class ContentModerationService:
             if not self.request_times:
                 return 0.0
 
-            return len(self.request_times) / 60.0
+            rate = len(self.request_times) / 60.0
+            logger.info("Current request rate: %.2f requests/second", rate)
+            return rate
 
     def moderate_text(self, text: str) -> Dict[str, float]:
         """Process text through the moderation model and return category scores."""
