@@ -11,6 +11,19 @@ class ContentModerationService:
     _instance: Optional["ContentModerationService"] = None
     _initialized: bool = False
 
+    # Mapping of model labels to human-readable categories
+    CATEGORY_MAPPING = {
+        "H": "Hate Speech",
+        "H2": "Hate Speech (Severe)",
+        "HR": "Hate Speech (Racial)",
+        "OK": "Safe Content",
+        "S": "Sexual Content",
+        "S3": "Sexual Content (Explicit)",
+        "SH": "Sexual Harassment",
+        "V": "Violence",
+        "V2": "Violence (Severe)"
+    }
+
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -63,12 +76,12 @@ class ContentModerationService:
             outputs = self.model(**inputs)
             scores = torch.sigmoid(outputs.logits).squeeze().numpy()
 
-        # Get category labels
+        # Get category labels and map them to human-readable categories
         labels = self.model.config.id2label
 
-        # Create result dictionary
+        # Create result dictionary with mapped categories
         result = {
-            labels[i]: float(score)
+            self.CATEGORY_MAPPING.get(labels[i], labels[i]): float(score)
             for i, score in enumerate(scores)
         }
 
