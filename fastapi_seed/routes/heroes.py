@@ -14,7 +14,7 @@ def get_session():
         yield session
 
 
-@router.post("/heroes")
+@router.post("/")
 def create_hero(hero_input: HeroInput, session: Session = Depends(get_session)):
     # Create a Hero instance from the HeroInput data
     hero = Hero.model_validate(hero_input)
