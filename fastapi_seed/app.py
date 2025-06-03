@@ -4,8 +4,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from fastapi_seed.api import heroes
 from fastapi_seed.repository.database import DatabaseManager
-from fastapi_seed.routes import heroes
 
 app = FastAPI(title="Heroes and Movies API")
 

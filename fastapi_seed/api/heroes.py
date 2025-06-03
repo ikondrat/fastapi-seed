@@ -4,8 +4,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
+from fastapi_seed.api.dependencies.services import get_heroes_service
 from fastapi_seed.models.hero import Hero, HeroCreate
-from fastapi_seed.routes.dependencies.services import get_heroes_service
 from fastapi_seed.services.heroes import HeroesService
 
 router = APIRouter(prefix="/heroes", tags=["heroes"])
