@@ -1,21 +1,10 @@
-from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
-from sqlmodel import Field, Relationship, SQLModel
-
-# Use TYPE_CHECKING to avoid circular imports at runtime
-if TYPE_CHECKING:
-    from fastapi_seed.models.movie import Movie
-else:
-    # Create a placeholder for runtime that will be replaced with the real class
-    Movie = object  # type: ignore
+from sqlmodel import Field, SQLModel
 
 
 class HeroBase(SQLModel):
     id: UUID
     name: str
-
-    """The dataset ID to which the sample belongs."""
-    movie_id: Optional[UUID] = Field(default=None, foreign_key="movies.id")
 
 
 class Hero(HeroBase, table=True):
@@ -23,15 +12,10 @@ class Hero(HeroBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str
 
-    movie: Optional["Movie"] = Relationship(  # type: ignore # noqa: F821, E501
-        back_populates="heroes",
-        sa_relationship_kwargs={"lazy": "select"},
-    )
 
-
-class HeroInput(SQLModel):
+class HeroCreate(SQLModel):
     name: str
 
 
-class HeroView(HeroBase):
+class HeroRead(HeroBase):
     pass
