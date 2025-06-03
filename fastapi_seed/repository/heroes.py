@@ -1,10 +1,12 @@
+"""Heroes repository module."""
+
 from sqlmodel import Session, select
 
 from fastapi_seed.models.hero import Hero, HeroCreate
 
 
 def create_hero(session: Session, hero_create: HeroCreate):
-    # Create a Hero instance from the HeroInput data
+    """Create a new hero in the database."""
     hero = Hero.model_validate(hero_create)
 
     # Now add the Hero instance to the session
@@ -20,8 +22,7 @@ def get_heroes(
     skip: int = 0,
     limit: int = 100,
 ):
-    # Use select with join to get heroes with their movies
+    """Retrieve heroes from the database with pagination."""
     statement = select(Hero).offset(skip).limit(limit)
 
-    heroes = session.exec(statement).all()
-    return heroes
+    return session.exec(statement).all()

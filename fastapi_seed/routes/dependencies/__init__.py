@@ -1,1 +1,1 @@
-"""Routes package for the FastAPI application.""" 
+"""Routes package for the FastAPI application."""

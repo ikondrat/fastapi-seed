@@ -1,4 +1,4 @@
-"""Module provides functions to initialize and manage the DuckDB with thread safety."""
+"""Module provides functions to initialize and manage database."""
 
 import logging
 import os
@@ -11,9 +11,11 @@ from sqlmodel import Session, SQLModel, create_engine
 
 
 class DatabaseManager:
-    """Manages database connections with thread safety and connection pooling."""
+    """Manages database connections."""
 
     _instance = None
+    engine = None
+    db_file = None
     _lock = threading.RLock()
     _initialized = False
 
@@ -63,19 +65,19 @@ class DatabaseManager:
         with cls._lock:
             if cls._instance is None:
                 cls._instance = super().__new__(cls)
-                cls._instance._initialized = False
+                cls._instance._initialized = False  # noqa: SLF001
 
             instance = cls._instance
 
             # Only initialize once
-            if not instance._initialized:
+            if not instance._initialized:  # noqa: SLF001
                 if cleanup_existing:
                     cls.cleanup_database(db_file)
 
                 # Use connection pooling with reasonable defaults
                 connect_args = {
                     # DuckDB needs the parameters in a format it understands
-                    "read_only": False  # Use read_only: False instead of access_mode
+                    "read_only": False
                 }
 
                 instance.engine = create_engine(
@@ -90,11 +92,9 @@ class DatabaseManager:
                 try:
                     # Initialize tables
                     SQLModel.metadata.create_all(instance.engine)
-                    instance._initialized = True
+                    instance._initialized = True  # noqa: SLF001
                     instance.db_file = db_file
-                    logging.info(
-                        f"Database initialized at {db_file} with connection pooling"
-                    )
+                    logging.info(f"Database initialized at {db_file}")
                 except Exception as e:
                     logging.error(f"Failed to initialize database: {e}")
                     raise

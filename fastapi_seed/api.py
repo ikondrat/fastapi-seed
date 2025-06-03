@@ -1,10 +1,11 @@
+"""FastAPI application for Heroes and Movies API."""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from fastapi_seed.repository.db import DatabaseManager
+from fastapi_seed.repository.database import DatabaseManager
 from fastapi_seed.routes import heroes
-
 
 app = FastAPI(title="Heroes and Movies API")
 
@@ -21,7 +22,9 @@ async def lifespan(_: FastAPI):
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
-    app = FastAPI(title="Lightly Purple API", version="1.0.0", lifespan=lifespan)
+    app = FastAPI(
+        title="Lightly Purple API", version="1.0.0", lifespan=lifespan
+    )
 
     app.include_router(heroes.router)
 
